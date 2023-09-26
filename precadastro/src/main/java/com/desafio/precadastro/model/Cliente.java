@@ -8,11 +8,12 @@ import java.util.UUID;
 
 public abstract class Cliente {
     UUID uuid = UUID.randomUUID();
-    @NotNull(message = "Campo MCC é obrigatório")
-    @Positive(message = "Valor deve ser positivo")
-    @Max(value = 9999, message = "Campo MCC deve ser entre 0 e 9999")
-    Integer mcc;
+    @NotBlank(message = "Campo MCC é obrigatório")
+    @Size(max=4, message = "MCC deve ter até 4 dígitos")
+    @Pattern(regexp = "^[0-9]+$", message = "MCC deve ter somente números")
+    String mcc;
     @NotBlank(message = "Campo CPF é obrigatório")
+    @Pattern(regexp = "^[0-9]+$", message = "CPF deve ter somente números")
     @Size(min = 11, max = 11, message = "O valor de CPF deve ser de 11 dígitos")
     String cpf;
     @NotBlank(message = "Campo Nome é obrigatório")
@@ -22,7 +23,7 @@ public abstract class Cliente {
     @Pattern(regexp = "^([a-zA-Z0-9_\\-.]+)@([a-zA-Z0-9_\\-.]+)\\.([a-zA-Z]{2,5})$", message = "Insira um e-mail válido")
     String email;
 
-    public Cliente(Integer mcc, String cpf, String nome, String email) {
+    public Cliente(String mcc, String cpf, String nome, String email) {
         this.mcc = mcc;
         this.cpf = cpf;
         this.nome = nome;
@@ -33,11 +34,11 @@ public abstract class Cliente {
         return uuid;
     }
 
-    public Integer getMcc() {
+    public String getMcc() {
         return mcc;
     }
 
-    public void setMcc(Integer mcc) {
+    public void setMcc(String mcc) {
         this.mcc = mcc;
     }
 

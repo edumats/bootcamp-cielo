@@ -1,10 +1,19 @@
 package com.desafio.precadastro.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public class PessoaJuridica extends Cliente {
+    @NotBlank(message = "Campo CNPJ obrigatório")
+    @Size(min = 14, max = 14, message = "CNPJ deve ter 14 dígitos")
+    @Pattern(regexp = "^[0-9]+$", message = "CNPJ deve ter somente números")
     String cnpj;
+
+    @Size(max = 50, message = "Razão Social deve ter até 50 caracteres")
     String razaoSocial;
 
-    public PessoaJuridica(Integer mcc, String cpf, String nome, String email, String cnpj, String razaoSocial) {
+    public PessoaJuridica(String mcc, String cpf, String nome, String email, String cnpj, String razaoSocial) {
         super(mcc, cpf, nome, email);
         this.cnpj = cnpj;
         this.razaoSocial = razaoSocial;

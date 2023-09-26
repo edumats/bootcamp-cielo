@@ -22,17 +22,61 @@ public class ClienteController {
         return pessoaFisicaService.getAllClientes();
     }
 
+    @GetMapping("/pf/{cpf}")
+    public ResponseEntity<PessoaFisica> getPessoaFisica(@PathVariable String cpf) {
+        PessoaFisica pessoaFisica = pessoaFisicaService.getClienteByCpf(cpf);
+        if (pessoaFisica != null) {
+            return new ResponseEntity<>(pessoaFisica, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/pf")
     public ResponseEntity<String> criarPessoaFisica(@Valid @RequestBody PessoaFisica newPessoaFisica, BindingResult bindingResult) {
+        // Realiza validação de dados
         if (bindingResult.hasErrors()) {
             StringBuilder mensagemErro = new StringBuilder("Erro de validação: ");
 
             bindingResult.getFieldErrors().forEach(erro -> {
                 mensagemErro.append(erro.getDefaultMessage()).append(", ");
             });
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensagemErro.toString());
+            return new ResponseEntity<>(mensagemErro.toString(), HttpStatus.BAD_REQUEST);
         }
-        pessoaFisicaService.salvarPessoaFisica(newPessoaFisica);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Pessoa física criada com sucesso");
+
+        PessoaFisica pessoaFisica = pessoaFisicaService.getClienteByCpf(newPessoaFisica.getCpf());
+        if (pessoaFisica == null) {
+            pessoaFisicaService.salvarPessoaFisica(newPessoaFisica);
+            return new ResponseEntity<>("Pessoa física criada com sucesso", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Pessoa física já está cadastrado", HttpStatus.CONFLICT);
+    }
+
+    // Atualiza Pessoa Física
+    @PutMapping("/pf/{cpf}")
+    public ResponseEntity<String> putPessoaFisica(
+            @Valid @RequestBody PessoaFisica updatedPessoaFisica,
+            @PathVariable String cpf,
+            BindingResult bindingResult) {
+
+        // Realiza validação de dados
+        if (bindingResult.hasErrors()) {
+            StringBuilder mensagemErro = new StringBuilder("Erro de validação: ");
+
+            bindingResult.getFieldErrors().forEach(erro -> {
+                mensagemErro.append(erro.getDefaultMessage()).append(", ");
+            });
+            return new ResponseEntity<>(mensagemErro.toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        // Checa se cadastro já existe
+        if (pessoaFisicaService.getClienteByCpf(cpf) == null) {
+            return new ResponseEntity<>(
+                    "Pessoa física ainda não cadastrada. Não incluir novo registro",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        pessoaFisicaService.updatePessoaFisica(cpf, updatedPessoaFisica);
+        return new ResponseEntity<>("Pessoa física atualizada", HttpStatus.OK);
     }
 }
