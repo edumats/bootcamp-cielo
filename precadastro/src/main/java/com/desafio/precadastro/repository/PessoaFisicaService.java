@@ -5,30 +5,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class PessoaFisicaService {
     // Armazena objetos PessoaFisica
-    private List<PessoaFisica> pessoasFisicas = new ArrayList<>();
-    private Long counter = 1L;
+    private final List<PessoaFisica> pessoasFisicas = new ArrayList<>();
 
-    public List<PessoaFisica> getAllClientes() {
+    // Retorna todos PFs
+    public List<PessoaFisica> getAllPessoasFisicas() {
         return pessoasFisicas;
     }
 
-    // Busca PessoaFisica por UUID
-    public PessoaFisica getClienteByUuid(UUID pessoaFisicaId) {
-        for (PessoaFisica pessoaFisica : pessoasFisicas) {
-            if (pessoaFisica.getUuid().equals(pessoaFisicaId)) {
-                return pessoaFisica;
-            }
-        }
-        return null;
-    }
-
-    // Procura PessoaFisica por CPF
-    public PessoaFisica getClienteByCpf(String cpf) {
+    // Retorna PF por CPF
+    public PessoaFisica getPessoaFisicaByCpf(String cpf) {
         for (PessoaFisica cliente : pessoasFisicas) {
             if (cliente.getCpf().equals(cpf)) {
                 return cliente;
@@ -37,15 +26,15 @@ public class PessoaFisicaService {
         return null;
     }
 
-    // Atualiza cadastro de PessoaFisica
+    // Atualiza cadastro de PF
     public PessoaFisica updatePessoaFisica(String cpf, PessoaFisica updatedPessoaFisica) {
-        PessoaFisica atualPessoaFisica = getClienteByCpf(cpf);
-        if (atualPessoaFisica == null) {
+        // Pega index da PF por CPF
+        int index = encontraIndexPorAtributo(cpf);
+
+        // Caso PF não seja encontrado, retorna null
+        if (index == -1) {
             return null;
         }
-
-        // Pega index da atual PessoaFisica
-        int index = pessoasFisicas.indexOf(atualPessoaFisica);
 
         // Atualiza atributos
         pessoasFisicas.set(index, updatedPessoaFisica);
@@ -53,10 +42,35 @@ public class PessoaFisicaService {
         return updatedPessoaFisica;
     }
 
-    // Salva instância de PessoaFisica
+    // Salva instância de PF
     public PessoaFisica salvarPessoaFisica(PessoaFisica newPessoaFisica) {
-        counter++;
         pessoasFisicas.add(newPessoaFisica);
         return newPessoaFisica;
+    }
+
+    // Deleta instância de PF
+    public Boolean deletarPessoaFisica(String cpf) {
+        int index = encontraIndexPorAtributo(cpf);
+        // Se não encontrado, retorna null
+        if (index == -1) {
+            return false;
+        }
+
+        // Deleta PessoaFisica
+        pessoasFisicas.remove(index);
+
+        // Retorna true se removido
+        return true;
+    }
+
+    // Encontra index de PF pelo atributo CPF
+    private int encontraIndexPorAtributo(String cpf) {
+        for (int i = 0; i < pessoasFisicas.size(); i++) {
+            PessoaFisica pf = pessoasFisicas.get(i);
+            if (pf.getCpf().equals(cpf)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
