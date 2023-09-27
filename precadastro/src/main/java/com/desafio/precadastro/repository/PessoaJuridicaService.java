@@ -3,7 +3,6 @@ package com.desafio.precadastro.repository;
 import com.desafio.precadastro.model.PessoaFisica;
 import com.desafio.precadastro.model.PessoaJuridica;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -45,7 +45,7 @@ public class PessoaFisicaController {
             StringBuilder mensagemErro = new StringBuilder("Erro de validação: ");
 
             bindingResult.getFieldErrors().forEach(erro -> {
-                mensagemErro.append(erro.getDefaultMessage()).append(", ");
+                mensagemErro.append(erro.getDefaultMessage()).append(" ");
             });
             return new ResponseEntity<>(mensagemErro.toString(), HttpStatus.BAD_REQUEST);
         }

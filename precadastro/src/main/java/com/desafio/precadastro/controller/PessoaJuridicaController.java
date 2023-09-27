@@ -1,12 +1,9 @@
 package com.desafio.precadastro.controller;
 
-import com.desafio.precadastro.model.PessoaFisica;
 import com.desafio.precadastro.model.PessoaJuridica;
 import com.desafio.precadastro.repository.PessoaJuridicaService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -66,7 +63,7 @@ public class PessoaJuridicaController {
 
     // Atualiza PJ
     @PutMapping("/{cnpj}")
-    public ResponseEntity<String> putPessoaFisica(
+    public ResponseEntity<String> putPessoaJuridica(
             @Valid @RequestBody PessoaJuridica updatedPessoaJuridica,
             @PathVariable String cnpj,
             BindingResult bindingResult) {
