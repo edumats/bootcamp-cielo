@@ -29,7 +29,7 @@ public class PessoaFisicaService {
     // Atualiza cadastro de PF
     public PessoaFisica updatePessoaFisica(String cpf, PessoaFisica updatedPessoaFisica) {
         // Pega index da PF por CPF
-        int index = encontraIndexPorAtributo(cpf);
+        int index = findIndexByAttribute(cpf);
 
         // Caso PF não seja encontrado, retorna null
         if (index == -1) {
@@ -43,15 +43,15 @@ public class PessoaFisicaService {
     }
 
     // Salva instância de PF
-    public PessoaFisica salvarPessoaFisica(PessoaFisica newPessoaFisica) {
+    public PessoaFisica savePessoaFisica(PessoaFisica newPessoaFisica) {
         pessoasFisicas.add(newPessoaFisica);
         return newPessoaFisica;
     }
 
     // Deleta instância de PF
-    public Boolean deletarPessoaFisica(String cpf) {
-        int index = encontraIndexPorAtributo(cpf);
-        // Se não encontrado, retorna null
+    public Boolean deletePessoaFisica(String cpf) {
+        int index = findIndexByAttribute(cpf);
+        // Se não encontrado, retorna false
         if (index == -1) {
             return false;
         }
@@ -64,7 +64,7 @@ public class PessoaFisicaService {
     }
 
     // Encontra index de PF pelo atributo CPF
-    private int encontraIndexPorAtributo(String cpf) {
+    private int findIndexByAttribute(String cpf) {
         for (int i = 0; i < pessoasFisicas.size(); i++) {
             PessoaFisica pf = pessoasFisicas.get(i);
             if (pf.getCpf().equals(cpf)) {

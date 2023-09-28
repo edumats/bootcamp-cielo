@@ -54,7 +54,7 @@ public class PessoaJuridicaController {
 
         // Se retornar null, podemos criar nova PJ
         if (pjEncontrada == null) {
-            pessoaJuridicaService.salvarPessoaJuridica(newPessoaJuridica);
+            pessoaJuridicaService.savePessoaJuridica(newPessoaJuridica);
             return new ResponseEntity<>("Pessoa jurídica criada com sucesso", HttpStatus.CREATED);
         }
         // Caso retorne uma PJ, nova PJ não pode ser criada
@@ -85,7 +85,7 @@ public class PessoaJuridicaController {
                     HttpStatus.NOT_FOUND);
         }
 
-        pessoaJuridicaService.updatedPessoaJuridica(cnpj, updatedPessoaJuridica);
+        pessoaJuridicaService.updatePessoaJuridica(cnpj, updatedPessoaJuridica);
         return new ResponseEntity<>("Pessoa física atualizada", HttpStatus.OK);
     }
 
@@ -93,7 +93,7 @@ public class PessoaJuridicaController {
     @DeleteMapping("/{cnpj}")
     public ResponseEntity<String> deletePessoaFisica(@PathVariable String cnpj) {
         // Se PJ é encontrado, é deletado
-        if (pessoaJuridicaService.deletarPessoaJuridica(cnpj)) {
+        if (pessoaJuridicaService.deletePessoaJuridica(cnpj)) {
             return new ResponseEntity<>("Pessoa Jurídica deletada", HttpStatus.OK);
         }
         // Caso não seja encontrada, retorna erro

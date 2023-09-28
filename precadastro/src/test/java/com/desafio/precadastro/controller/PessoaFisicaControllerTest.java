@@ -161,7 +161,7 @@ class PessoaFisicaControllerTest {
     @Test
     void testDeletePessoaFisica_NotFound() {
         // Mock para pessoaFisicaService
-        Mockito.when(pessoaFisicaService.deletarPessoaFisica(pfTeste.getCpf())).thenReturn(false);
+        Mockito.when(pessoaFisicaService.deletePessoaFisica(pfTeste.getCpf())).thenReturn(false);
 
         ResponseEntity<String> result = pessoaFisicaController.deletePessoaFisica(pfTeste.getCpf());
 
@@ -173,7 +173,7 @@ class PessoaFisicaControllerTest {
     @Test
     void testDeletePessoaFisica_Success() {
         // Mock para pessoaFisicaService
-        Mockito.when(pessoaFisicaService.deletarPessoaFisica(pfTeste.getCpf())).thenReturn(true);
+        Mockito.when(pessoaFisicaService.deletePessoaFisica(pfTeste.getCpf())).thenReturn(true);
 
         ResponseEntity<String> result = pessoaFisicaController.deletePessoaFisica(pfTeste.getCpf());
 

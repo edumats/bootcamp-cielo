@@ -54,7 +54,7 @@ public class PessoaFisicaController {
 
         // Se não retornar null, retornar PJ encontrado
         if (pfEncontrada == null) {
-            pessoaFisicaService.salvarPessoaFisica(newPessoaFisica);
+            pessoaFisicaService.savePessoaFisica(newPessoaFisica);
             return new ResponseEntity<>("Pessoa física criada com sucesso", HttpStatus.CREATED);
         }
         // Caso retorne uma PF, nova PF não pode ser criada
@@ -93,7 +93,7 @@ public class PessoaFisicaController {
     @DeleteMapping("/{cpf}")
     public ResponseEntity<String> deletePessoaFisica(@PathVariable String cpf) {
         // Se PessoaFisica é encontrado, é deletado
-        if (pessoaFisicaService.deletarPessoaFisica(cpf)) {
+        if (pessoaFisicaService.deletePessoaFisica(cpf)) {
             return new ResponseEntity<>("Pessoa Física deletada", HttpStatus.OK);
         }
         // Caso não seja encontrada, retorna erro
