@@ -37,14 +37,8 @@ public class PessoaJuridica extends Cliente {
 
     @Override
     public String toString() {
-        return "PessoaJuridica{" +
-                "cnpj='" + cnpj + '\'' +
-                ", razaoSocial='" + razaoSocial + '\'' +
-                ", uuid=" + uuid +
-                ", mcc=" + mcc +
-                ", cpf='" + cpf + '\'' +
-                ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                "} ";
+        return String.format(
+                "Pessoa Jurídica: cnpj=%s, razaoSocial=%s, mcc=%s, cpfContato=%s, nomeContato:%s, email=%s",
+                getCnpj(), getRazaoSocial(), getMcc(), getCpf(), getNome(), getEmail());
     }
 }

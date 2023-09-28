@@ -7,12 +7,8 @@ public class PessoaFisica extends Cliente {
 
     @Override
     public String toString() {
-        return "PessoaFisica{" +
-                "uuid=" + uuid +
-                ", mcc='" + mcc + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                "} " + super.toString();
+        return String.format(
+                "Pessoa Física: mcc=%s, cpf=%s, nome:%s, email=%s",
+                getMcc(), getCpf(), getNome(), getEmail());
     }
 }
