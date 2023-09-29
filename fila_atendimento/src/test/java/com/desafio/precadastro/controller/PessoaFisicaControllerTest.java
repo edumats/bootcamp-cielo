@@ -1,6 +1,8 @@
 package com.desafio.precadastro.controller;
 
+import com.desafio.precadastro.model.Cliente;
 import com.desafio.precadastro.model.PessoaFisica;
+import com.desafio.precadastro.service.GenericFila;
 import com.desafio.precadastro.service.PessoaFisicaService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,11 +16,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +41,17 @@ class PessoaFisicaControllerTest {
     @Test
     void testGetAllPessoaFisica() {
         // Preparar dados para o mock
-        List<PessoaFisica> pessoaFisicaList = new ArrayList<>();
-        pessoaFisicaList.add(pfTeste);
+        GenericFila<Cliente> resultadoEsperado = new GenericFila<>();
+        resultadoEsperado.enqueue(pfTeste);
 
         // Preparar o mock do pessoaFisicaService para retornar dados mockados
-        Mockito.when(pessoaFisicaService.getAllPessoasFisicas()).thenReturn(pessoaFisicaList);
+        Mockito.when(pessoaFisicaService.getAllPessoasFisicas()).thenReturn(resultadoEsperado.getAllClientes());
 
         // Chamada ao método alvo do teste
-        List<PessoaFisica> result = pessoaFisicaController.getAllPessoaFisica();
+        Cliente[] result = pessoaFisicaController.getAllPessoaFisica();
 
         // Checar resultado
-        assertEquals(pessoaFisicaList, result);
+        assertArrayEquals(resultadoEsperado.getAllClientes(), result);
     }
 
     @Test
@@ -159,6 +157,18 @@ class PessoaFisicaControllerTest {
     }
 
     @Test
+    void testDeletePessoaFisica_Success() {
+        // Mock para pessoaFisicaService
+        Mockito.when(pessoaFisicaService.deletePessoaFisica(pfTeste.getCpf())).thenReturn(true);
+
+        ResponseEntity<String> result = pessoaFisicaController.deletePessoaFisica(pfTeste.getCpf());
+
+        // Checar resultados
+        assertEquals("Pessoa Física deletada", result.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
     void testDeletePessoaFisica_NotFound() {
         // Mock para pessoaFisicaService
         Mockito.when(pessoaFisicaService.deletePessoaFisica(pfTeste.getCpf())).thenReturn(false);
@@ -171,14 +181,29 @@ class PessoaFisicaControllerTest {
     }
 
     @Test
-    void testDeletePessoaFisica_Success() {
+    void testGetAndDeletePessoaFisica_Success() {
         // Mock para pessoaFisicaService
-        Mockito.when(pessoaFisicaService.deletePessoaFisica(pfTeste.getCpf())).thenReturn(true);
+        Mockito.when(pessoaFisicaService.getAndDeletePessoaFisica()).thenReturn(pfTeste);
 
-        ResponseEntity<String> result = pessoaFisicaController.deletePessoaFisica(pfTeste.getCpf());
+        // Chama método alvo
+        ResponseEntity<PessoaFisica> result = pessoaFisicaController.getAndDeleteFirstPessoaFisica();
 
         // Checar resultados
-        assertEquals("Pessoa Física deletada", result.getBody());
+        assertEquals(pfTeste, result.getBody());
         assertEquals(HttpStatus.OK, result.getStatusCode());
+
+    }
+
+    @Test
+    void testGetAndDeletePessoaFisica_Empty_Queue() {
+        // Mock para pessoaFisicaService
+        Mockito.when(pessoaFisicaService.getAndDeletePessoaFisica()).thenReturn(null);
+
+        // Chama método alvo
+        ResponseEntity<PessoaFisica> result = pessoaFisicaController.getAndDeleteFirstPessoaFisica();
+
+        // Checar resultados
+        assertNull(result.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 }

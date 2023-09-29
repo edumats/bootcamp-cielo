@@ -1,5 +1,6 @@
 package com.desafio.precadastro.controller;
 
+import com.desafio.precadastro.model.Cliente;
 import com.desafio.precadastro.model.PessoaFisica;
 import com.desafio.precadastro.service.PessoaFisicaService;
 import jakarta.validation.Valid;
@@ -9,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/pf")
 public class PessoaFisicaController {
@@ -19,7 +18,7 @@ public class PessoaFisicaController {
 
     // Get todas PF
     @GetMapping("/")
-    public List<PessoaFisica> getAllPessoaFisica() {
+    public Cliente[] getAllPessoaFisica() {
         return pessoaFisicaService.getAllPessoasFisicas();
     }
 
@@ -99,4 +98,19 @@ public class PessoaFisicaController {
         // Caso não seja encontrada, retorna erro
         return new ResponseEntity<>("Pessoa física não encontrada", HttpStatus.NOT_FOUND);
     }
+
+    // Pega primeira PF da fila e a retorna, deletando-a no processo
+    @DeleteMapping("/primeira")
+    public ResponseEntity<PessoaFisica> getAndDeleteFirstPessoaFisica() {
+        PessoaFisica firstPessoaFisica = pessoaFisicaService.getAndDeletePessoaFisica();
+
+        // Caso a fila esteja vazia, retorne Not Found
+        if (firstPessoaFisica == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        // Retorne status 200 com a instância encontrada
+        return new ResponseEntity<>(firstPessoaFisica, HttpStatus.OK);
+    }
+
 }

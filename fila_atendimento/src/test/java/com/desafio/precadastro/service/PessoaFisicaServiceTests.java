@@ -1,4 +1,4 @@
-package com.desafio.precadastro.repository;
+package com.desafio.precadastro.service;
 
 import com.desafio.precadastro.model.PessoaFisica;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,11 +29,20 @@ public class PessoaFisicaServiceTests {
 
     @Test
     void testGetAllPessoaFisica() {
-        // Chama método alvo
-        List<PessoaFisica> result = pessoaFisicaService.getAllPessoasFisicas();
+        // Set up do resultado esperado
+        GenericFila<PessoaFisica> resultadoEsperado = new GenericFila<>();
+        resultadoEsperado.enqueue(pfTeste);
+        resultadoEsperado.enqueue(pfTeste1);
 
-        // Checa resultado
-        assertEquals(List.of(), result);
+        // Adicionando PFs ao service
+        pessoaFisicaService.savePessoaFisica(pfTeste);
+        pessoaFisicaService.savePessoaFisica(pfTeste1);
+
+        // Compara resultado
+        assertArrayEquals(
+                resultadoEsperado.getAllClientes(),
+                pessoaFisicaService.getAllPessoasFisicas()
+        );
     }
 
     @Test
@@ -121,4 +128,24 @@ public class PessoaFisicaServiceTests {
         assertFalse(result);
     }
 
+    @Test
+    void testGetAndDeletePessoaFisica_Exists() {
+        // Set up
+        pessoaFisicaService.savePessoaFisica(pfTeste);
+
+        // Chama método alvo
+        PessoaFisica result = pessoaFisicaService.getAndDeletePessoaFisica();
+
+        // Checa resultado
+        assertEquals(pfTeste, result);
+    }
+
+    @Test
+    void testGetAndDeletePessoaFisica_DoesNotExist() {
+        // Chama método alvo
+        PessoaFisica result = pessoaFisicaService.getAndDeletePessoaFisica();
+
+        // Checa resultado
+        assertNull(result);
+    }
 }

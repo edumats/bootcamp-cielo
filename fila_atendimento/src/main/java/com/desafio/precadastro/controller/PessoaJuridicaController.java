@@ -1,5 +1,6 @@
 package com.desafio.precadastro.controller;
 
+import com.desafio.precadastro.model.Cliente;
 import com.desafio.precadastro.model.PessoaJuridica;
 import com.desafio.precadastro.service.PessoaJuridicaService;
 import jakarta.validation.Valid;
@@ -9,17 +10,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/pj")
 public class PessoaJuridicaController {
-    @Autowired
     private PessoaJuridicaService pessoaJuridicaService;
+
+    @Autowired
+    public void setPessoaJuridicaService(PessoaJuridicaService pessoaJuridicaService) {
+        this.pessoaJuridicaService = pessoaJuridicaService;
+    }
 
     // GET todas PJs
     @GetMapping("/")
-    public List<PessoaJuridica> getAllPessoaJuridica() {
+    public Cliente[] getAllPessoaJuridica() {
         return pessoaJuridicaService.getAllPessoasJuridicas();
     }
 
@@ -44,9 +47,7 @@ public class PessoaJuridicaController {
         if (bindingResult.hasErrors()) {
             StringBuilder mensagemErro = new StringBuilder("Erro de validação: ");
 
-            bindingResult.getFieldErrors().forEach(erro -> {
-                mensagemErro.append(erro.getDefaultMessage()).append(", ");
-            });
+            bindingResult.getFieldErrors().forEach(erro -> mensagemErro.append(erro.getDefaultMessage()).append(", "));
             return new ResponseEntity<>(mensagemErro.toString(), HttpStatus.BAD_REQUEST);
         }
         // Retorna null, caso PJ não seja encontrado
@@ -72,9 +73,7 @@ public class PessoaJuridicaController {
         if (bindingResult.hasErrors()) {
             StringBuilder mensagemErro = new StringBuilder("Erro de validação: ");
 
-            bindingResult.getFieldErrors().forEach(erro -> {
-                mensagemErro.append(erro.getDefaultMessage()).append(", ");
-            });
+            bindingResult.getFieldErrors().forEach(erro -> mensagemErro.append(erro.getDefaultMessage()).append(", "));
             return new ResponseEntity<>(mensagemErro.toString(), HttpStatus.BAD_REQUEST);
         }
 
@@ -91,12 +90,26 @@ public class PessoaJuridicaController {
 
     // Deleta PJ
     @DeleteMapping("/{cnpj}")
-    public ResponseEntity<String> deletePessoaFisica(@PathVariable String cnpj) {
+    public ResponseEntity<String> deletePessoaJuridica(@PathVariable String cnpj) {
         // Se PJ é encontrado, é deletado
         if (pessoaJuridicaService.deletePessoaJuridica(cnpj)) {
             return new ResponseEntity<>("Pessoa Jurídica deletada", HttpStatus.OK);
         }
         // Caso não seja encontrada, retorna erro
         return new ResponseEntity<>("Pessoa jurídica não encontrada", HttpStatus.NOT_FOUND);
+    }
+
+    // Pega primeira PJ da fila e a retorna, deletando-a no processo
+    @DeleteMapping("/primeira")
+    public ResponseEntity<PessoaJuridica> getAndDeleteFirstPessoaJuridica() {
+        PessoaJuridica firstPessoaJuridica = pessoaJuridicaService.getAndDeletePessoaJuridica();
+
+        // Caso a fila esteja vazia, retorne Not Found
+        if (firstPessoaJuridica == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        // Retorne status 200 com a instância encontrada
+        return new ResponseEntity<>(firstPessoaJuridica, HttpStatus.OK);
     }
 }

@@ -1,6 +1,5 @@
-package com.desafio.precadastro.repository;
+package com.desafio.precadastro.service;
 
-import com.desafio.precadastro.model.PessoaFisica;
 import com.desafio.precadastro.model.PessoaJuridica;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

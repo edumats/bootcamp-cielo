@@ -1,4 +1,4 @@
-package com.desafio.precadastro.repository;
+package com.desafio.precadastro.service;
 
 import com.desafio.precadastro.model.PessoaJuridica;
 import org.springframework.stereotype.Service;

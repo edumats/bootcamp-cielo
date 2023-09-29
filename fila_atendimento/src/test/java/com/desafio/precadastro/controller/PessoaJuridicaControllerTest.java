@@ -1,6 +1,8 @@
 package com.desafio.precadastro.controller;
 
+import com.desafio.precadastro.model.Cliente;
 import com.desafio.precadastro.model.PessoaJuridica;
+import com.desafio.precadastro.service.GenericFila;
 import com.desafio.precadastro.service.PessoaJuridicaService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,11 +16,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class PessoaJuridicaControllerTest {
@@ -33,6 +31,7 @@ class PessoaJuridicaControllerTest {
     private BindingResult bindingResult;
 
     private static PessoaJuridica pjTeste;
+    private static PessoaJuridica pjTeste1;
 
     @BeforeAll
     static void setUp() {
@@ -44,27 +43,39 @@ class PessoaJuridicaControllerTest {
                 "71080025169542",
                 "string"
         );
+        pjTeste1 = new PessoaJuridica(
+                "3075",
+                "29089996404",
+                "string1",
+                "empresa1@teste1.com",
+                "71080025169542",
+                "string1"
+        );
     }
 
     @Test
     void testGetAllPessoaJuridica() {
-        // Preparar dados para o mock
-        List<PessoaJuridica> pessoaFisicaList = new ArrayList<>();
-        pessoaFisicaList.add(pjTeste);
+        // Set up do resultado esperado
+        GenericFila<Cliente> resultadoEsperado = new GenericFila<>();
+        resultadoEsperado.enqueue(pjTeste);
+        resultadoEsperado.enqueue(pjTeste1);
 
-        // Preparar o mock do pessoaFisicaService para retornar dados mockados
-        Mockito.when(pessoaJuridicaService.getAllPessoasJuridicas()).thenReturn(pessoaFisicaList);
+        // Preparar o mock do pessoaJuridicaService para retornar dados mockados
+        Mockito.when(pessoaJuridicaService.getAllPessoasJuridicas()).thenReturn(resultadoEsperado.getAllClientes());
 
         // Chamada ao método alvo do teste
-        List<PessoaJuridica> result = pessoaJuridicaController.getAllPessoaJuridica();
+        Cliente[] result = pessoaJuridicaController.getAllPessoaJuridica();
 
-        // Checar resultado
-        assertEquals(pessoaFisicaList, result);
+        // Compara resultado
+        assertArrayEquals(
+                resultadoEsperado.getAllClientes(),
+                result
+        );
     }
 
     @Test
     void testGetPessoaJuridica_Success() {
-        // Preparar mock para retonar PessoaFisica
+        // Preparar mock para retonar PessoaJuridica
         Mockito.when(pessoaJuridicaService.getPessoaJuridicaByCnpj(pjTeste.getCnpj())).thenReturn(pjTeste);
 
         // Chamada ao método alvo do teste
@@ -93,7 +104,7 @@ class PessoaJuridicaControllerTest {
         // Mock para bindingResult
         Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 
-        // Mock para o pessoaFisicaService
+        // Mock para o pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.getPessoaJuridicaByCnpj(pjTeste.getCnpj())).thenReturn(null);
 
 
@@ -107,7 +118,7 @@ class PessoaJuridicaControllerTest {
 
     @Test
     void testCriarPessoaJuridica_ValidationError() {
-        // Mock para o pessoaFisicaService
+        // Mock para o pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.getPessoaJuridicaByCnpj(pjTeste.getCnpj())).thenReturn(pjTeste);
 
         // Mock para bindingResult não acusar erros
@@ -125,7 +136,7 @@ class PessoaJuridicaControllerTest {
         // Mock para bindingResult não acusar erros
         Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 
-        // Mock para pessoaFisicaService
+        // Mock para pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.getPessoaJuridicaByCnpj(pjTeste.getCnpj())).thenReturn(pjTeste);
 
         // Chamar o método alvo do teste
@@ -153,7 +164,7 @@ class PessoaJuridicaControllerTest {
         // Mock para bindingResult não acusar erros
         Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 
-        // Mock para pessoaFisicaService
+        // Mock para pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.getPessoaJuridicaByCnpj(pjTeste.getCnpj())).thenReturn(null);
 
         // Chamar o método alvo do teste
@@ -165,11 +176,11 @@ class PessoaJuridicaControllerTest {
     }
 
     @Test
-    void testDeletePessoaFisica_NotFound() {
-        // Mock para pessoaFisicaService
+    void testDeletePessoaJuridica_NotFound() {
+        // Mock para pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.deletePessoaJuridica(pjTeste.getCnpj())).thenReturn(false);
 
-        ResponseEntity<String> result = pessoaJuridicaController.deletePessoaFisica(pjTeste.getCnpj());
+        ResponseEntity<String> result = pessoaJuridicaController.deletePessoaJuridica(pjTeste.getCnpj());
 
         // Checar resultados
         assertEquals("Pessoa jurídica não encontrada", result.getBody());
@@ -177,14 +188,41 @@ class PessoaJuridicaControllerTest {
     }
 
     @Test
-    void testDeletePessoaFisica_Success() {
-        // Mock para pessoaFisicaService
+    void testDeletePessoaJuridica_Success() {
+        // Mock para pessoaJuridicaService
         Mockito.when(pessoaJuridicaService.deletePessoaJuridica(pjTeste.getCnpj())).thenReturn(true);
 
-        ResponseEntity<String> result = pessoaJuridicaController.deletePessoaFisica(pjTeste.getCnpj());
+        ResponseEntity<String> result = pessoaJuridicaController.deletePessoaJuridica(pjTeste.getCnpj());
 
         // Checar resultados
         assertEquals("Pessoa Jurídica deletada", result.getBody());
         assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void testGetAndDeletePessoaJuridica_Success() {
+        // Mock para pessoaJuridicaService
+        Mockito.when(pessoaJuridicaService.getAndDeletePessoaJuridica()).thenReturn(pjTeste);
+
+        // Chama método alvo
+        ResponseEntity<PessoaJuridica> result = pessoaJuridicaController.getAndDeleteFirstPessoaJuridica();
+
+        // Checar resultados
+        assertEquals(pjTeste, result.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+    }
+
+    @Test
+    void testGetAndDeletePessoaJuridica_Empty_Queue() {
+        // Mock para pessoaJuridicaService
+        Mockito.when(pessoaJuridicaService.getAndDeletePessoaJuridica()).thenReturn(null);
+
+        // Chama método alvo
+        ResponseEntity<PessoaJuridica> result = pessoaJuridicaController.getAndDeleteFirstPessoaJuridica();
+
+        // Checar resultados
+        assertNull(result.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 }
